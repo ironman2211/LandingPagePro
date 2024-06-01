@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getUserSession } from "./lib/session";
 
-export default function Home() {
+export default async function Home() {
   return (
     <main>
-      hellow brahma
-      <Link href="/users">Users</Link>
+      <h1>Welcome to the Landing Page Dashboard</h1>
+      <Link href="/login">Login</Link>
     </main>
   );
 }
