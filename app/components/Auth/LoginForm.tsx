@@ -1,16 +1,44 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import Link from "next/link";
 
-const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+const formSchema = z.object({
+  username: z.string().min(5).max(50),
+  password: z.string().min(5).max(50),
+});
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username === "admin" && password === "password") {
+const LoginForm = () => {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+    if (values.username === "admin" && values.password === "password") {
       localStorage.setItem("isAuthenticated", "true");
       router.push("/dashboard");
     } else {
@@ -19,43 +47,60 @@ const LoginForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-5  w-[80vw] md:w-[30vw] text-gray-300 items-center justify-center "
-    >
-      {/* <p className="text-center">
-        Lorem antium ullam quibusdam hic necessitatibus dolorum.
-      </p> */}
-      <div className="flex flex-col gap-2 w-full">
-        <label>Username</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          className="text-gray-800 outline-none p-3 rounded-lg w-full"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="my-6 flex flex-col gap-1"
+      >
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter your username"
+                  {...field}
+                  className="focus-visible:ring-transparent border-2 border-cyan-800"
+                />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className=" flex flex-col gap-2 w-full">
-        {" "}
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="text-gray-800  outline-none p-3 rounded-lg w-full"
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  {...field}
+                  className="focus-visible:ring-transparent border-2 border-cyan-800"
+                />
+              </FormControl>
+              <FormDescription>
+                Your password must be at least 5 characters long.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="w-1/2 p-3 bg-slate-600 rounded-lg flex items-center justify-center mt-3">
-        <button type="submit">Login</button>
-      </div>
-      {/* <div className="w-1/2 p-3 bg-slate-600 rounded-lg flex items-center justify-center "> */}
-      <Link href="api/auth/signin">
-        Sign In With Google
-      </Link>
-      {/* </div> */}
-    </form>
+        <Button type="submit" className="my-2">
+          Login
+        </Button>
+        <Link href="/api/auth/signin">
+          <Button variant="outline" className="w-full">Sign In With Google</Button>
+        </Link>
+      </form>
+    </Form>
   );
 };
 

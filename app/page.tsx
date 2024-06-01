@@ -4,7 +4,7 @@ import BaseStructue from "./components/common/common";
 export default async function Home() {
   return (
     <BaseStructue>
-      <h1 className="text-6xl font-bold font-family ">Welcome</h1>
+      <h1 className="text-6xl font-bold font-family mt-10 ">Welcome</h1>
       <span className="font-[Oswald] text-3xl font-bold bg-gradient-to-r text-transparent bg-clip-text from-cyan-400 to-blue-500">
         Landing Page Pro
       </span>

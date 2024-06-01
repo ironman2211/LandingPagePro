@@ -1,11 +1,16 @@
-'use client'
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import PrivateRoute from '../components/Auth/PrivateRoute';
-import PageList from '../components/Dashboard/PageList';
-import TemplateLibrary from '../components/Dashboard/TemplateLibrary';
-import { getLandingPages } from '../services/LandingPageService';
-import { getTemplates } from '../services/templateService';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import PrivateRoute from "../components/Auth/PrivateRoute";
+import PageList from "../components/Dashboard/PageList";
+import TemplateLibrary from "../components/Dashboard/TemplateLibrary";
+import { getLandingPages } from "../services/LandingPageService";
+import { getTemplates } from "../services/templateService";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import LandingPageList from "../components/Dashboard/LandingPageList";
+import Template1 from "../templates/Template1";
+import { Template } from "@/interfaces";
 
 interface LandingPage {
   id: number;
@@ -13,11 +18,6 @@ interface LandingPage {
   description: string;
 }
 
-interface Template {
-  id: number;
-  name: string;
-  description: string;
-}
 
 const Dashboard = () => {
   const [landingPages, setLandingPages] = useState<LandingPage[]>([]); // Specify the type for landingPages state
@@ -35,7 +35,7 @@ const Dashboard = () => {
       const landingPagesData = await getLandingPages();
       setLandingPages(landingPagesData);
     } catch (error) {
-      console.error('Error fetching landing pages:', error);
+      console.error("Error fetching landing pages:", error);
     }
   };
 
@@ -44,7 +44,7 @@ const Dashboard = () => {
       const templatesData = await getTemplates();
       setTemplates(templatesData);
     } catch (error) {
-      console.error('Error fetching templates:', error);
+      console.error("Error fetching templates:", error);
     }
   };
 
@@ -65,21 +65,27 @@ const Dashboard = () => {
       // Implement deletion logic here
       console.log(`Deleting page with ID: ${id}`);
     } catch (error) {
-      console.error('Error deleting page:', error);
+      console.error("Error deleting page:", error);
     }
   };
 
   return (
     <PrivateRoute>
-      <div>
-        <h1>Dashboard</h1>
-        <TemplateLibrary templates={templates} onCreatePage={handleCreatePage} />
-        <PageList
+      <div className="w-full h-full py-10 px-20 flex flex-col gap-5">
+        <div>
+          <h1 className="text-4xl font-bold ">Dashboard</h1>
+        </div>
+
+        <TemplateLibrary
+          templates={templates}
+          onCreatePage={handleCreatePage}
+        />
+        {/* <PageList
           pages={landingPages}
           onEdit={handleEditPage}
           onView={handleViewPage}
           onDelete={handleDeletePage}
-        />
+        /> */}
       </div>
     </PrivateRoute>
   );

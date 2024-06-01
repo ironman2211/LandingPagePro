@@ -6,7 +6,7 @@ interface CommonProps {
 
 const BaseStructue: React.FC<CommonProps> = ({ children }) => {
   return (
-    <div className="h-[100vh] w-full flex items-center m-0 p-0 flex-col gap-5 pt-[20vh]">
+    <div className="h-[100vh] w-full flex items-center m-0 p-0 flex-col gap-5 pt-[10vh]">
       {children}
     </div>
   );
