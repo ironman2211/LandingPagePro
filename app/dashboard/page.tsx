@@ -3,57 +3,83 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PrivateRoute from '../components/Auth/PrivateRoute';
 import PageList from '../components/Dashboard/PageList';
+import TemplateLibrary from '../components/Dashboard/TemplateLibrary';
+import { getLandingPages } from '../services/LandingPageService';
+import { getTemplates } from '../services/templateService';
 
-interface Page {
+interface LandingPage {
   id: number;
   title: string;
   description: string;
-  components: any[];
-  status: string;
+}
+
+interface Template {
+  id: number;
+  name: string;
+  description: string;
 }
 
 const Dashboard = () => {
-  const [pages, setPages] = useState<Page[]>([]);
+  const [landingPages, setLandingPages] = useState<LandingPage[]>([]); // Specify the type for landingPages state
+  const [templates, setTemplates] = useState<Template[]>([]); // Specify the type for templates state
   const router = useRouter();
 
   useEffect(() => {
-    const storedPages = JSON.parse(localStorage.getItem('pages') || '[]');
-    setPages(storedPages);
+    // Fetch landing pages and templates when component mounts
+    fetchLandingPages();
+    fetchTemplates();
   }, []);
 
-  const handleEdit = (id: number) => {
+  const fetchLandingPages = async () => {
+    try {
+      const landingPagesData = await getLandingPages();
+      setLandingPages(landingPagesData);
+    } catch (error) {
+      console.error('Error fetching landing pages:', error);
+    }
+  };
+
+  const fetchTemplates = async () => {
+    try {
+      const templatesData = await getTemplates();
+      setTemplates(templatesData);
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+    }
+  };
+
+  const handleCreatePage = (templateId: any) => {
+    router.push(`/editor/new?templateId=${templateId}`);
+  };
+
+  const handleEditPage = (id: any) => {
     router.push(`/editor/${id}`);
   };
 
-  const handleView = (id: number) => {
+  const handleViewPage = (id: any) => {
     router.push(`/preview/${id}`);
   };
 
-  const handleDelete = (id: number) => {
-    const updatedPages = pages.filter((page) => page.id !== id);
-    setPages(updatedPages);
-    localStorage.setItem('pages', JSON.stringify(updatedPages));
-  };
-
-  const handleCreate = () => {
-    const newPage: Page = {
-      id: Date.now(),
-      title: 'New Page',
-      description: 'Description',
-      components: [],
-      status: 'Draft',
-    };
-    setPages([...pages, newPage]);
-    localStorage.setItem('pages', JSON.stringify([...pages, newPage]));
-    router.push(`/editor/${newPage.id}`);
+  const handleDeletePage = async (id: any) => {
+    try {
+      // Implement deletion logic here
+      console.log(`Deleting page with ID: ${id}`);
+    } catch (error) {
+      console.error('Error deleting page:', error);
+    }
   };
 
   return (
     <PrivateRoute>
       <div>
         <h1>Dashboard</h1>
-        <button onClick={handleCreate}>Create New Landing Page</button>
-        <PageList pages={pages} onEdit={handleEdit} onView={handleView} onDelete={handleDelete} />
+        <TemplateLibrary templates={templates} onCreatePage={handleCreatePage} />
+        <PageList
+          pages={landingPages}
+          onEdit={handleEditPage}
+          onView={handleViewPage}
+          onDelete={handleDeletePage}
+        />
       </div>
     </PrivateRoute>
   );
