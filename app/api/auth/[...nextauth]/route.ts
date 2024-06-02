@@ -1,4 +1,3 @@
-import { session } from '../../../lib/session'
 import { NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth/next'
 import GoogleProvider from 'next-auth/providers/google'
@@ -25,7 +24,9 @@ const authOption: NextAuthOptions = {
 
             return true
         },
-        session,
+        async session({ session, token }) {
+            return session
+        },
         async jwt({ token, user, account, profile }) {
             if (profile) {
 

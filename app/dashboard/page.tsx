@@ -2,13 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PrivateRoute from "../components/Auth/PrivateRoute";
-import PageList from "../components/Dashboard/PageList";
 import TemplateLibrary from "../components/Dashboard/TemplateLibrary";
 import { getLandingPages } from "../services/LandingPageService";
-import { getTemplates } from "../services/templateService";
+import { getTemplates } from "../services/TemplateService";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import LandingPageList from "../components/Dashboard/LandingPageList";
+import { LogOut, Plus } from "lucide-react";
 import Template1 from "../templates/Template1";
 import { Template } from "@/interfaces";
 
@@ -17,7 +15,6 @@ interface LandingPage {
   title: string;
   description: string;
 }
-
 
 const Dashboard = () => {
   const [landingPages, setLandingPages] = useState<LandingPage[]>([]); // Specify the type for landingPages state
@@ -42,7 +39,9 @@ const Dashboard = () => {
   const fetchTemplates = async () => {
     try {
       const templatesData = await getTemplates();
+
       setTemplates(templatesData);
+      console.log(templatesData);
     } catch (error) {
       console.error("Error fetching templates:", error);
     }
@@ -69,9 +68,21 @@ const Dashboard = () => {
     }
   };
 
+  const logout = () => {
+    router.push(`/`);
+  };
   return (
     <PrivateRoute>
-      <div className="w-full h-full py-10 px-20 flex flex-col gap-5">
+      <div className="w-full h-[8vh] flex items-center justify-between px-20 bg-transparent shadow-md">
+        <b>Landing Page Pro</b>
+        <Button variant="outline" onClick={logout}>
+          Logout <LogOut className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+
+
+      {/* <AddTemplateForm /> */}
+      <div className="w-full h-[80vh] py-8 px-20 flex flex-col gap-5">
         <div>
           <h1 className="text-4xl font-bold ">Dashboard</h1>
         </div>

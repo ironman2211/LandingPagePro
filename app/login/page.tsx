@@ -1,16 +1,24 @@
 import React from "react";
 import LoginForm from "../components/Auth/LoginForm";
-import BaseStructue from "../components/common/common";
+import BaseStructue from "../utils/common";
+import SignupForm from "../components/Auth/SignupForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const LoginPage = () => {
   return (
     <BaseStructue>
-      <div className=" p-10 rounded-lg w-[90vw] md:w-[35vw] shadow-xl bg-gray-50 ">
-        <span className="text-4xl font-bold bg-gradient-to-r text-transparent bg-clip-text from-cyan-400 to-blue-500 ">
-          Login
-        </span>{" "}
-        <LoginForm />
-      </div>
+        <Tabs defaultValue="login" className="w-[90vw] md:w-[35vw] p-10 rounded-lg  shadow-xl bg-gray-50">
+          <TabsList>
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+          <TabsContent value="login" >
+            <LoginForm/>
+          </TabsContent>
+          <TabsContent value="signup">
+          <SignupForm />
+          </TabsContent>
+        </Tabs>
     </BaseStructue>
   );
 };

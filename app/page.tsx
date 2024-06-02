@@ -1,5 +1,5 @@
 import Link from "next/link";
-import BaseStructue from "./components/common/common";
+import BaseStructue from "./utils/common";
 
 export default async function Home() {
   return (
