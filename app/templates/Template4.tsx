@@ -35,7 +35,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ baseColor, components }) => {
         </header>
       )}
       <main
-        className="w-full h-4/5 bg-center bg-cover relative p-10"
+        className="max-w-full max-h-4/5 bg-center bg-cover relative p-10"
         style={{
           backgroundImage: `linear-gradient(to left, rgba(0,0,0,0), rgba(0,0,0,0.8)), url(${components?.main?.imageUrl})`,
         }}

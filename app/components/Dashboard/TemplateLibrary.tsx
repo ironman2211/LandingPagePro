@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CircleX, Eye, Pencil, Plus, Trash } from "lucide-react";
+import { Eye, Pencil, Plus, Trash } from "lucide-react";
 import { Template } from "@/interfaces";
 import Template1 from "@/app/templates/Template1";
 import Template2 from "@/app/templates/Template2";
@@ -16,17 +16,18 @@ import {
 } from "@/components/ui/carousel";
 import { AddTemplateForm } from "./AddTemplate";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 interface TemplateLibraryProps {
-  templates: Template[];
-  onCreatePage: (templateId: number) => void;
+  templates: Template[]
 }
 
 const useTemplateDialog = (initialState: Template | null) => {
-  const [currTemplate, setCurrTemplate] = useState<Template | null>(initialState);
+  const [currTemplate, setCurrTemplate] = useState<Template | null>(
+    initialState
+  );
   const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-
   const onEdit = (template: Template) => {
     setCurrTemplate(template);
     setIsUpdate(true);
@@ -39,7 +40,7 @@ const useTemplateDialog = (initialState: Template | null) => {
       baseColor: "",
       components: {
         header: { title: "", logo: "", loginButton: false },
-        main: { text: "", description: "", imageUrl: "", },
+        main: { text: "", description: "", imageUrl: "" },
         footer: { text: "" },
       },
     });
@@ -56,24 +57,74 @@ const useTemplateDialog = (initialState: Template | null) => {
     addTemplate,
   };
 };
+const handleDelete = async (template: any) => {
+  try {
+    const response = await fetch("/api/template", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "DELETE", id: template._id }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete template");
+    }
+
+    toast({
+      title: "Template Deleted successfully",
+      description: new Date().toDateString().toString(),
+    });
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Template Deleted successfully",
+      description: new Date().toDateString().toString(),
+    });
+  }
+};
 
 const TemplatePreview: React.FC<{ template: Template }> = ({ template }) => {
   switch (template.type) {
     case "template-1":
-      return <Template1 baseColor={template.baseColor} components={template.components} />;
+      return (
+        <Template1
+          baseColor={template.baseColor}
+          components={template.components}
+        />
+      );
     case "template-2":
-      return <Template2 baseColor={template.baseColor} components={template.components} />;
+      return (
+        <Template2
+          baseColor={template.baseColor}
+          components={template.components}
+        />
+      );
     case "template-3":
-      return <Template3 baseColor={template.baseColor} components={template.components} />;
+      return (
+        <Template3
+          baseColor={template.baseColor}
+          components={template.components}
+        />
+      );
     case "template-4":
-      return <Template4 baseColor={template.baseColor} components={template.components} />;
+      return (
+        <Template4
+          baseColor={template.baseColor}
+          components={template.components}
+        />
+      );
     default:
       return null;
   }
 };
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates, onCreatePage }) => {
-  const { currTemplate, open, isUpdate, setOpen, onEdit, addTemplate } = useTemplateDialog(null);
+const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates }) => {
+  const { currTemplate, open, isUpdate, setOpen, onEdit, addTemplate } =
+    useTemplateDialog(null);
 
   return (
     <div className="w-full">
@@ -102,14 +153,21 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates, onCreatePa
       <Carousel opts={{ align: "start" }} className="w-full">
         <CarouselContent>
           {templates.map((template, index) => (
-            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 p-2 h-[23rem]">
+            <CarouselItem
+              key={index}
+              className="md:basis-1/2 lg:basis-1/3 p-2 h-[23rem]"
+            >
               <Card className="h-full rounded-2xl">
                 <CardContent className="flex flex-col h-full p-5 gap-2">
                   <div className="w-full h-[15rem] rounded-2xl relative">
                     <TemplatePreview template={template} />
                   </div>
                   <div className="flex items-center justify-evenly mt-auto">
-                    <Button variant="outline" className="flex gap-2" onClick={() => onEdit(template)}>
+                    <Button
+                      variant="outline"
+                      className="flex gap-2"
+                      onClick={() => onEdit(template)}
+                    >
                       <Pencil size="14" /> Edit
                     </Button>
                     <Dialog>
@@ -122,7 +180,11 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates, onCreatePa
                         <TemplatePreview template={template} />
                       </DialogContent>
                     </Dialog>
-                    <Button variant="destructive" className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      className="flex gap-2"
+                      onClick={() => handleDelete(template)}
+                    >
                       <Trash size="14" /> Delete
                     </Button>
                   </div>

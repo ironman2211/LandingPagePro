@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       message: "User created successfully",
       successful: true,
       token,
-      user: { _id: user._id, username: user.username, email: user.email } 
+      user,
     });
   } catch (error) {
     console.error(error);

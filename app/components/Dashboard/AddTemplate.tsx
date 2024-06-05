@@ -46,7 +46,7 @@ const initialState = {
     },
   },
 };
-export function AddTemplateForm({ setOpen, temp,isUpdate   }: any) {
+export function AddTemplateForm({ setOpen, temp, isUpdate }: any) {
   const [template, setTemplate] = useState(temp);
   const { toast } = useToast();
 
@@ -98,20 +98,24 @@ export function AddTemplateForm({ setOpen, temp,isUpdate   }: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if(isUpdate){
-      await axios.patch("/api/template",template);
+
+    if (isUpdate) {
+      await axios.patch("/api/template", template);
       toast({
         title: "Template update successfully",
         description: new Date().toDateString().toString(),
-      }); 
-    }else{      
-     await axios.post("/api/template",template);
+      });
+    } else {
+      await axios.post("/api/template", template);
       toast({
         title: "Template Added successfully",
         description: new Date().toDateString().toString(),
-      }); 
+      });
     }
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
     setTemplate({
       type: "",
       baseColor: "",
@@ -131,14 +135,16 @@ export function AddTemplateForm({ setOpen, temp,isUpdate   }: any) {
         },
       },
     });
-    setOpen(false)
+    setOpen(false);
   };
   return (
     <Card className="p-0 border-0 shadow-none">
       <CardHeader>
-      <CardTitle>{isUpdate ? "Update Template" : "Create Template"}</CardTitle>
+        <CardTitle>
+          {isUpdate ? "Update Template" : "Create Template"}
+        </CardTitle>
         <CardDescription>
-        Fill in the details to {isUpdate ? "update" : "create"} a template.
+          Fill in the details to {isUpdate ? "update" : "create"} a template.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -182,6 +188,15 @@ export function AddTemplateForm({ setOpen, temp,isUpdate   }: any) {
                   <SelectItem value="green">Green</SelectItem>
                   <SelectItem value="blue">Blue</SelectItem>
                   <SelectItem value="yellow">Yellow</SelectItem>
+                  <SelectItem value="orange">Orange</SelectItem>
+                  <SelectItem value="purple">Purple</SelectItem>
+                  <SelectItem value="pink">Pink</SelectItem>
+                  <SelectItem value="brown">Brown</SelectItem>
+                  <SelectItem value="gray">Gray</SelectItem>
+                  <SelectItem value="black">Black</SelectItem>
+                  <SelectItem value="white">White</SelectItem>
+                  <SelectItem value="cyan">Cyan</SelectItem>
+                  <SelectItem value="magenta">Magenta</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -253,7 +268,7 @@ export function AddTemplateForm({ setOpen, temp,isUpdate   }: any) {
       </CardContent>
       <CardFooter className="flex justify-end">
         <Button onClick={handleSubmit} className="">
-        {isUpdate ? "Update Template" : "Add Template"}
+          {isUpdate ? "Update Template" : "Add Template"}
         </Button>
       </CardFooter>
     </Card>

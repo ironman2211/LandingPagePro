@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
-
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -20,15 +19,16 @@ import {
 import Link from "next/link";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
-  email: z.string().min(5).max(50),
-  password: z.string().min(5).max(50),
+  email: z.string().email("Invalid email address").max(50),
+  password: z.string().min(5, "Password must be at least 5 characters long").max(50),
 });
 
 const LoginForm = () => {
   const router = useRouter();
-  
+  const { data: session, status } = useSession();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,51 +38,50 @@ const LoginForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      localStorage.setItem("user", JSON.stringify(session.user));
+      localStorage.setItem("token", "authenticated");
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
+
   const onSubmit = async (user: z.infer<typeof formSchema>) => {
     try {
-      if (!user.email || !user.password) {
-        return;
-      }
-      const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
-      if (!emailRegex.test(user.email)) {
-        return;
-      }
       const res = await axios.post("/api/login", user);
-      console.log(res.data);
-      if (res.data.status == 200 || res.data.status == 201) {
-        localStorage.setItem('user', JSON.stringify(res.data.user));  
-        localStorage.setItem('token', res.data.token);     
+      if (res.data.status === 200 || res.data.status === 201) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("token", res.data.token);
         toast({
-          title: "User login successfull",
-          description: new Date().toDateString().toString(),
-        }); 
-        router.push("/dashboard")
-      } else if (res.data.status == 400) {
+          title: "User login successful",
+          description: new Date().toDateString(),
+        });
+        router.push("/dashboard");
+      } else {
+        let errorMessage = "An error occurred";
+        if (res.data.status === 400) {
+          errorMessage = "Invalid username or password";
+        } else if (res.data.status === 404) {
+          errorMessage = "User not found";
+        }
         toast({
-          title: "Invalalid user name or password",
+          title: errorMessage,
           variant: "destructive",
-          description: new Date().toDateString().toString(),
-        }); 
-        console.log("user already exsist");
-      }else if (res.data.status == 404) {
-        toast({
-          title: "User not found",
-          variant: "destructive",
-          description: new Date().toDateString().toString(),
-        }); 
-        console.log("user already exsist");
+          description: new Date().toDateString(),
+        });
       }
     } catch (error) {
-      alert("Enter a valid mail");
+      toast({
+        title: "Login failed",
+        variant: "destructive",
+        description: "Please check your email and password",
+      });
     }
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="my-6 flex flex-col gap-1"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="my-6 flex flex-col gap-1">
         <FormField
           control={form.control}
           name="email"
@@ -96,9 +95,6 @@ const LoginForm = () => {
                   className="focus-visible:ring-transparent border-2 border-cyan-800"
                 />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -117,9 +113,6 @@ const LoginForm = () => {
                   className="focus-visible:ring-transparent border-2 border-cyan-800"
                 />
               </FormControl>
-              <FormDescription>
-                Your password must be at least 5 characters long.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -128,7 +121,9 @@ const LoginForm = () => {
           Login
         </Button>
         <Link href="/api/auth/signin">
-          <Button variant="outline" className="w-full">Sign In With Google</Button>
+          <Button variant="outline" className="w-full">
+            Sign In With Google
+          </Button>
         </Link>
       </form>
     </Form>

@@ -17,7 +17,7 @@ const VerticalLayout: React.FC<VerticalLayoutProps> = ({ baseColor, components }
       className="h-full w-full flex flex-col"
       style={{ backgroundColor: lighterShade }}
     >
-      <header className="w-full shadow-md h-10 flex items-center p-5 px-10 justify-between" style={{ backgroundColor: darkerShade }}>
+      <header className="w-full shadow-md h-10 flex items-center p-5 px-10 justify-between  min-h-[10%]" style={{ backgroundColor: darkerShade }}>
         {components?.header?.logo && (
           <div className="h-5 w-5 flex gap-2 items-center justify-center">
             <img src={components?.header?.logo} alt="" className="" />
@@ -32,11 +32,12 @@ const VerticalLayout: React.FC<VerticalLayoutProps> = ({ baseColor, components }
           </button>
         )}
       </header>
-      <main className="w-full p-8">
+      <main className="max-w-full p-8 min-h-[80%]">
+        s
         <h1 className="text-2xl mb-4" style={{ color: textColor }}>{components?.main?.text}</h1>
         <p className="text-lg">{components?.main?.description}</p>
       </main>
-      <footer className="bg-gray-700 p-4 text-white items-center justify-center flex text-xs">
+      <footer className="bg-gray-700  min-h-[10%] p-4 text-white items-center justify-center flex text-xs">
         <p>{components?.footer?.text} @created by dahPro</p>
       </footer>
     </div>

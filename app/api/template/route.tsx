@@ -73,20 +73,30 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     await connect();
-    const { id } = await req.json();
-    const deletedTemplate = await Template.findByIdAndDelete(id);
-    if (!deletedTemplate) {
+    const { action, id } = await req.json();
+    
+    if (action === 'DELETE') {
+      const deletedTemplate = await Template.findByIdAndDelete(id);
+      if (!deletedTemplate) {
+        return NextResponse.json({
+          status: 404,
+          message: "Template not found",
+          successful: false,
+        });
+      }
       return NextResponse.json({
-        status: 404,
-        message: "Template not found",
-        successful: false,
+        status: 200,
+        message: "Template deleted successfully",
+        successful: true,
+        deletedTemplate,
       });
     }
+    // Handle other actions if needed
+
     return NextResponse.json({
-      status: 200,
-      message: "Template deleted successfully",
-      successful: true,
-      deletedTemplate,
+      status: 400,
+      message: "Invalid action",
+      successful: false,
     });
   } catch (error) {
     console.error(error);
