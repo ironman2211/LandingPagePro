@@ -50,12 +50,11 @@ export function AddTemplateForm({ setOpen, temp, isUpdate }: any) {
   const [template, setTemplate] = useState(temp);
   const { toast } = useToast();
 
-  if (template === initialState) setupdate(true);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const [component, field] = id.split(".");
     if (component && field) {
-      setTemplate((prevState) => ({
+      setTemplate((prevState:any) => ({
         ...prevState,
         components: {
           ...prevState.components,
@@ -66,7 +65,7 @@ export function AddTemplateForm({ setOpen, temp, isUpdate }: any) {
         },
       }));
     } else {
-      setTemplate((prevState) => ({
+      setTemplate((prevState:any) => ({
         ...prevState,
         [id]: value,
       }));
@@ -77,7 +76,7 @@ export function AddTemplateForm({ setOpen, temp, isUpdate }: any) {
     const { id, checked } = e.target;
 
     const [component, field] = id.split(".");
-    setTemplate((prevState) => ({
+    setTemplate((prevState:any) => ({
       ...prevState,
       components: {
         ...prevState.components,
@@ -90,7 +89,7 @@ export function AddTemplateForm({ setOpen, temp, isUpdate }: any) {
   };
 
   const handleSelectChange = (field: string, value: string) => {
-    setTemplate((prevState) => ({
+    setTemplate((prevState:any) => ({
       ...prevState,
       [field]: value,
     }));

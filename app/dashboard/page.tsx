@@ -1,47 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import PrivateRoute from "../components/Auth/PrivateRoute";
 import TemplateLibrary from "../components/Dashboard/TemplateLibrary";
-import { getLandingPages } from "../services/LandingPageService";
-import { getTemplates } from "../services/TemplateService";
 import { Button } from "@/components/ui/button";
 import { LogOut, Plus } from "lucide-react";
-import Template1 from "../templates/Template1";
 import { Template } from "@/interfaces";
 import axios from "axios";
 import { signOut } from "next-auth/react";
 
-interface LandingPage {
-  id: number;
-  title: string;
-  description: string;
-}
-
 const Dashboard = () => {
-  const [landingPages, setLandingPages] = useState<LandingPage[]>([]); // Specify the type for landingPages state
   const [templates, setTemplates] = useState<Template[]>([]); // Specify the type for templates state
-  const router = useRouter();
 
   useEffect(() => {
-    fetchLandingPages();
     fetchTemplates();
   }, []);
 
-  const fetchLandingPages = async () => {
-    try {
-      const landingPagesData = await getLandingPages();
-      setLandingPages(landingPagesData);
-    } catch (error) {
-      console.error("Error fetching landing pages:", error);
-    }
-  };
 
   const fetchTemplates = async () => {
     try {
       const res = await axios.get("/api/template");
-      console.log(res);
-
       setTemplates(res.data.templates);
     } catch (error) {
       console.error("Error fetching templates:", error);
