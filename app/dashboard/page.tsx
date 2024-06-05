@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Plus } from "lucide-react";
 import Template1 from "../templates/Template1";
 import { Template } from "@/interfaces";
+import axios from "axios";
 
 interface LandingPage {
   id: number;
@@ -22,7 +23,6 @@ const Dashboard = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch landing pages and templates when component mounts
     fetchLandingPages();
     fetchTemplates();
   }, []);
@@ -38,10 +38,10 @@ const Dashboard = () => {
 
   const fetchTemplates = async () => {
     try {
-      const templatesData = await getTemplates();
-
-      setTemplates(templatesData);
-      console.log(templatesData);
+      const res = await axios.get("/api/template");
+      console.log(res);
+      
+      setTemplates(res.data.templates);
     } catch (error) {
       console.error("Error fetching templates:", error);
     }
@@ -51,24 +51,9 @@ const Dashboard = () => {
     router.push(`/editor/new?templateId=${templateId}`);
   };
 
-  const handleEditPage = (id: any) => {
-    router.push(`/editor/${id}`);
-  };
-
-  const handleViewPage = (id: any) => {
-    router.push(`/preview/${id}`);
-  };
-
-  const handleDeletePage = async (id: any) => {
-    try {
-      // Implement deletion logic here
-      console.log(`Deleting page with ID: ${id}`);
-    } catch (error) {
-      console.error("Error deleting page:", error);
-    }
-  };
-
   const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     router.push(`/`);
   };
   return (
@@ -80,8 +65,6 @@ const Dashboard = () => {
         </Button>
       </div>
 
-
-      {/* <AddTemplateForm /> */}
       <div className="w-full h-[80vh] py-8 px-20 flex flex-col gap-5">
         <div>
           <h1 className="text-4xl font-bold ">Dashboard</h1>
@@ -91,12 +74,6 @@ const Dashboard = () => {
           templates={templates}
           onCreatePage={handleCreatePage}
         />
-        {/* <PageList
-          pages={landingPages}
-          onEdit={handleEditPage}
-          onView={handleViewPage}
-          onDelete={handleDeletePage}
-        /> */}
       </div>
     </PrivateRoute>
   );

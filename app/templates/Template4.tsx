@@ -1,33 +1,52 @@
 import React from "react";
+import { shade, tint, getLuminance } from "polished";
+import { Components } from "@/interfaces";
 
 interface LandingPageProps {
-  title: string;
-  description: string;
-  imageUrl: string;
+  baseColor: string;
+  components: Components;
 }
 
-const Template4: React.FC<LandingPageProps> = ({
-  title,
-  description,
-  imageUrl,
-}) => {
+const LandingPage: React.FC<LandingPageProps> = ({ baseColor, components }) => {
+  const darkerShade = shade(0.3, baseColor); // Darken by 30%
+  const lighterShade = tint(0.5, baseColor); // Lighten by 50%
+  const textColor = getLuminance(baseColor) > 0.5 ? "#000" : "#fff"; // Determine text color based on luminance
+  console.log("components");
   return (
-    <div className="h-full w-full flex flex-col justify-between bg-gray-900 text-white">
-      <header className="w-full shadow-md h-10 flex items-center p-5 px-10 justify-between">
-        <h1 className="font-normal font-[Oswald]">{title}</h1>
-        <button className="text-xs bg-white text-gray-900 px-2 rounded-xl">Login</button>
-      </header>
-      <main className="w-full h-3/5 bg-center bg-cover relative ">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-xl text-white text-center">{description}</p>
-        </div>
-        <img src={imageUrl} className="w-full h-full opacity-80" alt="Background" />
+    <div
+      className="h-full w-full flex flex-col justify-between"
+      style={{ backgroundColor: lighterShade }}
+    >
+      {components.header && (
+        <header className="w-full shadow-md h-10 flex items-center p-5 px-10 justify-between">
+          {components.header.logo && (
+            <div className="h-5 w-5 flex gap-2 items-center justify-center">
+              <img src={components.header.logo} alt="" />
+              <h1 className="font-normal font-[Oswald]" style={{ color: textColor }}>
+                {components.header.title}
+              </h1>
+            </div>
+          )}
+          {components.header.loginButton && (
+            <button className="text-xs " style={{ color: darkerShade }}>
+              Login
+            </button>
+          )}
+        </header>
+      )}
+      <main
+        className="w-full h-4/5 bg-center bg-cover relative p-10"
+        style={{
+          backgroundImage: `linear-gradient(to left, rgba(0,0,0,0), rgba(0,0,0,0.8)), url(${components?.main?.imageUrl})`,
+        }}
+      >
+        <p className="text-xl text-white">{components?.main?.description}</p>
       </main>
-      <footer className="bg-gray-700 p-4 text-white items-center justify-center flex text-xs">
-        <p>Footer Content @created by dahPro</p>
+      <footer className="p-4 text-white items-center justify-center flex text-xs">
+        <p>{components?.footer?.text} @created by dahPro</p>
       </footer>
     </div>
   );
 };
 
-export default Template4;
+export default LandingPage;

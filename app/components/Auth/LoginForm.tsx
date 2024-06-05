@@ -18,31 +18,62 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
-  username: z.string().min(5).max(50),
+  email: z.string().min(5).max(50),
   password: z.string().min(5).max(50),
 });
 
 const LoginForm = () => {
   const router = useRouter();
+  
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    if (values.username === "admin" && values.password === "password") {
-      localStorage.setItem("isAuthenticated", "true");
-      router.push("/dashboard");
-    } else {
-      alert("Invalid credentials");
+  const onSubmit = async (user: z.infer<typeof formSchema>) => {
+    try {
+      if (!user.email || !user.password) {
+        return;
+      }
+      const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+      if (!emailRegex.test(user.email)) {
+        return;
+      }
+      const res = await axios.post("/api/login", user);
+      console.log(res.data);
+      if (res.data.status == 200 || res.data.status == 201) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));  
+        localStorage.setItem('token', res.data.token);     
+        toast({
+          title: "User login successfull",
+          description: new Date().toDateString().toString(),
+        }); 
+        router.push("/dashboard")
+      } else if (res.data.status == 400) {
+        toast({
+          title: "Invalalid user name or password",
+          variant: "destructive",
+          description: new Date().toDateString().toString(),
+        }); 
+        console.log("user already exsist");
+      }else if (res.data.status == 404) {
+        toast({
+          title: "User not found",
+          variant: "destructive",
+          description: new Date().toDateString().toString(),
+        }); 
+        console.log("user already exsist");
+      }
+    } catch (error) {
+      alert("Enter a valid mail");
     }
   };
 
@@ -54,13 +85,13 @@ const LoginForm = () => {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter your username"
+                  placeholder="Enter your Email"
                   {...field}
                   className="focus-visible:ring-transparent border-2 border-cyan-800"
                 />

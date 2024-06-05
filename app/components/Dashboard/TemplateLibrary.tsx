@@ -1,23 +1,12 @@
-"use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { CircleX, Eye, Pencil, Plus, Trash } from "lucide-react";
 import { Template } from "@/interfaces";
 import Template1 from "@/app/templates/Template1";
 import Template2 from "@/app/templates/Template2";
 import Template3 from "@/app/templates/Template3";
 import Template4 from "@/app/templates/Template4";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Carousel,
   CarouselContent,
@@ -26,48 +15,119 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { AddTemplateForm } from "./AddTemplate";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface TemplateLibraryProps {
   templates: Template[];
   onCreatePage: (templateId: number) => void;
 }
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
-  templates,
-  onCreatePage,
-}) => {
+const useTemplateDialog = (initialState: Template | null) => {
+  const [currTemplate, setCurrTemplate] = useState<Template | null>(initialState);
+  const [open, setOpen] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  const onEdit = (template: Template) => {
+    setCurrTemplate(template);
+    setIsUpdate(true);
+    setOpen(true);
+  };
+
+  const addTemplate = () => {
+    setCurrTemplate({
+      type: "",
+      baseColor: "",
+      components: {
+        header: { title: "", logo: "", loginButton: false },
+        main: { text: "", description: "", imageUrl: "", },
+        footer: { text: "" },
+      },
+    });
+    setIsUpdate(false);
+    setOpen(true);
+  };
+
+  return {
+    currTemplate,
+    open,
+    isUpdate,
+    setOpen,
+    onEdit,
+    addTemplate,
+  };
+};
+
+const TemplatePreview: React.FC<{ template: Template }> = ({ template }) => {
+  switch (template.type) {
+    case "template-1":
+      return <Template1 baseColor={template.baseColor} components={template.components} />;
+    case "template-2":
+      return <Template2 baseColor={template.baseColor} components={template.components} />;
+    case "template-3":
+      return <Template3 baseColor={template.baseColor} components={template.components} />;
+    case "template-4":
+      return <Template4 baseColor={template.baseColor} components={template.components} />;
+    default:
+      return null;
+  }
+};
+
+const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ templates, onCreatePage }) => {
+  const { currTemplate, open, isUpdate, setOpen, onEdit, addTemplate } = useTemplateDialog(null);
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between w-full">
-        <div>
-          <p className="text-xl">Choose a template to continue</p>
-        </div>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button>
+        <p className="text-xl">Choose a template to continue</p>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={addTemplate}>
               <Plus size="1.2rem" className="mr-2" /> Add Template
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="fixed  w-full h-[90vh] p-0 max-h-screen overflow-hidden bg-white">
+          </DialogTrigger>
+          <DialogContent className="fixed w-full h-[90vh] p-0 max-h-screen overflow-hidden bg-white sm:max-w-[900px]">
             <div className="overflow-y-scroll scrollbar-hide h-full">
-              <AddTemplateForm cancel={
-                <AlertDialogCancel>Cancel</AlertDialogCancel>} />
-              <AlertDialogFooter>
-              </AlertDialogFooter>
+              {currTemplate && (
+                <AddTemplateForm
+                  setOpen={setOpen}
+                  temp={currTemplate}
+                  isUpdate={isUpdate}
+                  addTemplate={addTemplate}
+                />
+              )}
             </div>
-          </AlertDialogContent>
-        </AlertDialog>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <Carousel className="w-full max-w-3xl mt-4">
-        <CarouselContent className="flex space-x-4">
+      <Carousel opts={{ align: "start" }} className="w-full">
+        <CarouselContent>
           {templates.map((template, index) => (
-            <CarouselItem key={index} className="w-full flex-shrink-0">
-              {template.type === "template1" && <Template1 {...template.props} />}
-              {template.type === "template2" && <Template2 {...template.props} />}
-              {template.type === "template3" && <Template3 {...template.props} />}
-              {template.type === "template4" && <Template4 {...template.props} />}
+            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 p-2 h-[23rem]">
+              <Card className="h-full rounded-2xl">
+                <CardContent className="flex flex-col h-full p-5 gap-2">
+                  <div className="w-full h-[15rem] rounded-2xl relative">
+                    <TemplatePreview template={template} />
+                  </div>
+                  <div className="flex items-center justify-evenly mt-auto">
+                    <Button variant="outline" className="flex gap-2" onClick={() => onEdit(template)}>
+                      <Pencil size="14" /> Edit
+                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="flex gap-2">
+                          <Eye size="14" /> View
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="fixed w-full h-[90vh] p-0 max-h-screen overflow-hidden bg-white sm:max-w-[90vw]">
+                        <TemplatePreview template={template} />
+                      </DialogContent>
+                    </Dialog>
+                    <Button variant="destructive" className="flex gap-2">
+                      <Trash size="14" /> Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </CarouselItem>
           ))}
         </CarouselContent>

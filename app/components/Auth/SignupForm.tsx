@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -25,27 +27,52 @@ const formSchema = z.object({
   password: z.string().min(5).max(50),
 });
 
-const SignupForm
- = () => {
+const SignupForm = () => {
+  const { toast } = useToast();
+
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      email:"",
+      email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    if (values.username === "admin" && values.password === "password") {
-      localStorage.setItem("isAuthenticated", "true");
-      router.push("/dashboard");
-    } else {
-      alert("Invalid credentials");
+  const onSubmit = async (user: z.infer<typeof formSchema>) => {
+    try {
+      if (!user.username || !user.email || !user.password) {
+        return;
+      }
+      const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+      if (!emailRegex.test(user.email)) {
+        return;
+      }
+      const res = await axios.post("/api/register", user);
+      console.log(res.data);
+      if (res.data.status == 200 || res.data.status == 201) {
+        console.log("user added successfully");
+        toast({
+          title: "User created sussefully",
+          description: new Date().toDateString().toString(),
+        });
+        localStorage.setItem('user', JSON.stringify(res.data.user));  
+        localStorage.setItem('token', res.data.token);        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else if (res.data.status == 400) {
+        toast({
+          variant: "destructive",
+          title: `user email ${user.email} already exsist`,
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: `"Enter a valid mail"`,
+      });
     }
   };
 
@@ -120,12 +147,13 @@ const SignupForm
           Sign Up
         </Button>
         <Link href="/api/auth/signin">
-          <Button variant="outline" className="w-full">Sign In With Google</Button>
+          <Button variant="outline" className="w-full">
+            Sign In With Google
+          </Button>
         </Link>
       </form>
     </Form>
   );
 };
 
-export default SignupForm
-;
+export default SignupForm;

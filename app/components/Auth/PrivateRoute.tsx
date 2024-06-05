@@ -10,7 +10,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    const isAuthenticated = localStorage.getItem('token');
     if (!isAuthenticated) {
       router.push('/login');
     }
