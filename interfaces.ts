@@ -12,7 +12,6 @@ interface HeaderProps {
   logo: string;
   loginButton: boolean;
 }
-
 // Define the MainProps interface
 interface MainProps {
   text: string;
