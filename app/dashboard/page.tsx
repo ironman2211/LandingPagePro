@@ -25,12 +25,8 @@ const Dashboard = () => {
     }
   };
 
-  const res = localStorage.getItem("user");
-  if (res) {
-    var user = JSON.parse(res);
-  }
+ 
 
-  console.log(user);
 
   const logout = () => {
     // localStorage.removeItem("user");
@@ -50,7 +46,7 @@ const Dashboard = () => {
               alt=""
             /> */}
             <p className="text-gray-600">
-              {user.name ? user.name : user.username}
+              {/* {user.name ? user.name : user.username} */}
             </p>
           </div>
           <Button variant="outline" onClick={logout}>
