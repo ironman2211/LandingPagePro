@@ -10,13 +10,13 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem("token");
-    const status = localStorage.getItem("status");
+    // const isAuthenticated = localStorage.getItem("token");
+    // const status = localStorage.getItem("status");
     console.log();
     
-    if (status !== "authenticated" || !isAuthenticated) {
-      // router.push("/login");
-    }
+    // if (status !== "authenticated" || !isAuthenticated) {
+    //   // router.push("/login");
+    // }
   }, [router]);
 
   return <>{children}</>;

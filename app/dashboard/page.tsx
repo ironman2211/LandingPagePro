@@ -33,9 +33,9 @@ const Dashboard = () => {
   console.log(user);
 
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("status");
+    // localStorage.removeItem("user");
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("status");
     signOut({ callbackUrl: "/login" });
   };
   return (

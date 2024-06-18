@@ -57,8 +57,8 @@ const SignupForm = () => {
           title: "User created sussefully",
           description: new Date().toDateString().toString(),
         });
-        localStorage.setItem('user', JSON.stringify(res.data.user));  
-        localStorage.setItem('token', res.data.token);        
+        // localStorage.setItem('user', JSON.stringify(res.data.user));  
+        // localStorage.setItem('token', res.data.token);        
         setTimeout(() => {
           window.location.reload();
         }, 1000);

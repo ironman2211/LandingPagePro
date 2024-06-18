@@ -40,8 +40,8 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "authenticated") {
-      localStorage.setItem("user", JSON.stringify(session.user));
-      localStorage.setItem("token", "authenticated");
+      // localStorage.setItem("user", JSON.stringify(session.user));
+      // localStorage.setItem("token", "authenticated");
       router.push("/dashboard");
     }
   }, [status, session, router]);
@@ -50,8 +50,8 @@ const LoginForm = () => {
     try {
       const res = await axios.post("/api/login", user);
       if (res.data.status === 200 || res.data.status === 201) {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        localStorage.setItem("token", res.data.token);
+        // localStorage.setItem("user", JSON.stringify(res.data.user));
+        // localStorage.setItem("token", res.data.token);
         toast({
           title: "User login successful",
           description: new Date().toDateString(),
